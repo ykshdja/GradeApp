@@ -1,0 +1,452 @@
+<!--
+    Statement of Authorship - I Yash Khanduja, 000826385 hereby certify that this assessment is my own work.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script
+      crossorigin
+      src="https://unpkg.com/react@17/umd/react.development.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"
+      integrity="sha512-kp7YHLxuJDJcOzStgd6vtpxr4ZU9kjn77e6dBsivSz+pUuAuMlE2UTdKB7jjsWT84qbS8kdCWHPETnP/ctrFsA=="
+      crossorigin="anonymous"
+    ></script>
+
+    <style>
+      body{
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-image: linear-gradient(to right, rgba(255,0,0,0), rgb(	49.8, 60, 69.8));
+      }
+      #root{
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 16;
+        font-weight:bolder ;
+       
+      }
+      .div-root{
+        margin: 0 auto;
+  width: 270px;
+  padding: 40px;
+
+      }
+      h1 { 
+        color: rgb(247, 245, 240); 
+         font-family: 'Muli', sans-serif;
+         font-weight: normal; 
+         line-height: 48px; 
+         margin: 0;
+         background-color: black;
+        
+         text-align:center;
+         }
+
+         input{
+          border: 2px solid rgb(0, 0, 0);
+  border-radius: 4px;
+  padding:5px;
+  width:150px;
+  
+         }
+         .GradeAdd{
+           padding:10px;
+         }
+         button{
+          background-color: black;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;;
+         }
+
+         table{
+          width: 100%;
+          padding:5px;
+          
+         }
+         .gl-tr{
+           padding:10px;
+         }
+         .min-div{
+           text-align: center;
+         }
+    </style>
+
+    <title>Lab 6 Yash Khanduja</title>
+
+    <script type="text/babel">
+    const initialState  = {
+      courseName: "",
+            grade: "",
+            courseNameError: " ",
+            gradeError: " "
+    }
+      class GradeAdd extends React.Component {
+
+
+        constructor(props) {
+          super(props);
+          this.state = {
+            courseName: null,
+            grade: null,
+            courseNameError: "",
+            gradeError: ""
+          };
+        }
+        handleCourseNameChange(e) {
+          this.setState({ courseName: e.target.value });
+        }
+
+        handleGradeChange(e) {
+          this.setState({ grade: e.target.value });
+        }
+
+        handleAddClick() {
+        const isValid = this.validate();
+          if(this.validate())
+          {
+            console.log(isValid);
+            console.log(this.state);
+            this.setState(initialState);
+            this.props.onChange(this.state.courseName, this.state.grade);
+          }
+          else if(!this.validate())
+          {
+            console.log(this.state);
+            console.log(isValid);
+            //this.setState({courseNameError : "Field is Empty",gradeError:"Field is Empty"});
+          }
+          else{
+         this.props.onChange(this.state.courseName, this.state.grade);
+          }
+        }
+
+        validate = () =>{
+          let courseNameError = "";
+          let gradeError = "";
+          if(!this.state.courseName )
+          {
+            courseNameError = "Field is Empty";
+            
+          }
+          if(!this.state.grade)
+          {
+            gradeError = "Field is Empty";
+          }
+          
+          if(courseNameError || gradeError)
+          {
+            this.setState({courseNameError,gradeError});
+            return false;
+          }
+
+          return true;
+
+        };
+
+        render() {
+          return (
+            <div className="GradeAdd">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>
+                      <input className="input-crs" 
+                      
+                        type="text"
+                        placeholder="Course Name"
+                        value={this.state.courseName || " "} //Uncontrolled Component
+                        onChange={this.handleCourseNameChange.bind(this)}
+                      />
+                      <div style={{fontSize: 13, color:"red"}}  className="coursenameError">{this.state.courseNameError}</div>
+                    </td>
+                    <td>
+                      <input className="input-grd"
+                      
+                        type="number"
+                        min="0"
+                        max="100"
+                        placeholder="Course Grade"
+                        value={this.state.grade || " "} //Uncontrolled Component
+                        onChange={this.handleGradeChange.bind(this)}
+                      />
+                      <div style={{fontSize: 13, color:"red"}}  className="coursenameError">{this.state.gradeError}</div>
+                    </td>
+                    <td>
+                      <button  className="add-btn"  onClick={this.handleAddClick.bind(this)}>
+                        Add
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+      }
+
+      class GradeList extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            activeGrade: null,
+          };
+        }
+
+        handleEditClick = (grade) => {
+          this.setState({ activeGrade: grade });
+          this.props.onChange(grade);
+        }
+
+        handleDeleteClick(event) {
+          console.log(event.target.id, "id");
+          const { id } = event.target;
+          const { grades, handleUpdateState } = this.props;
+          const filteredGrades = grades.filter((grade) => grade.id != id);
+          console.log(filteredGrades, "filteredGrades");
+          handleUpdateState(filteredGrades);
+        }
+
+       
+        
+
+        render() {
+          console.log(this.props.grades, "grades");
+          let gradeRows = this.props.grades.map((grade) => {
+            return (
+              <tr key={grade.courseName.toString()}>
+                <td>{grade.courseName}</td>
+                <td>{grade.grade}</td>
+                <td>
+                  <button>Edit</button>
+                </td>
+                <td>
+                  <button className="btn del-btn" id={grade.id} onClick={this.handleDeleteClick.bind(this)}>Delete</button>
+                </td>
+              </tr>
+            );
+          });
+
+          return (
+            <div className="GradeList">
+              <table>
+                <tbody>
+                  <tr className="gl-tr">
+                    <td>Course Name</td>
+                    <td>Grade</td>
+                    <td>Edit</td>
+                    <td>Delete</td>
+                  </tr>
+                </tbody>
+                {gradeRows}
+              </table>
+            </div>
+          );
+        }
+      }
+
+      class GradeResult extends React.Component {
+        //Stateless Component --
+        constructor(props) {
+          super(props);
+        }
+
+        calcAvg() {
+          return (this.calcMax() + this.calcMin()) / 2;
+        }
+        calcMax() {
+          return this.props.grades.reduce(
+            (min, b) => Math.max(min, b.grade),
+            this.props.grades[0].grade
+          );
+        }
+        calcMin() {
+          return this.props.grades.reduce(
+            (min, b) => Math.min(min, b.grade),
+            this.props.grades[0].grade
+          );
+          console.log(
+            this.props.grades.reduce(
+              (min, b) => Math.min(min, b.grade),
+              this.props.grades[0].grades
+            )
+          );
+        }
+        render() {
+          return (
+            <div className="GradeResult">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>Minimum {this.calcMin()} </td>
+                    <td>Average {this.calcAvg()}</td>
+                    <td>Maximum {this.calcMax()}</td>
+                  </tr>
+                </tbody>
+              </table>
+            
+            </div>
+          );
+        }
+      }
+
+      //Component for Edit
+      class GradeForm extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            courseName: "",
+            grade: 0,
+          };
+        }
+
+        handleCourseNameChange(e) {
+          this.setState({ courseName: e.target.value });
+        }
+
+        handleGradeChange(e) {
+          this.setState({ grade: e.target.value });
+        }
+
+        handleAddClick() {
+          this.props.onChange("add", this.state.courseName, this.state.grade);
+        }
+        handleEditClicke(e) {
+          this.props.onChange("edit", this.state.courseName, this.state.grade);
+        }
+        componentDidUpdate() {
+          if (this.currentlyEditing) {
+            this.setState({
+              courseName: this.currentlyEditing.courseName,
+              grade: this.currentlyEditing.courseName,
+            });
+          }
+        }
+
+        render() {
+          let actionButton = (
+            <td>
+              <button onClick={this.handleAddClick.bind(this)}>Add</button>
+            </td>
+          );
+          if (this.props.currentlyEditing)
+            actionButton = (
+              <td>
+                <button onClick={this.handleAddClick.bind(this)}>Edit</button>
+              </td>
+            );
+
+          return (
+            <div className="GradeForm">
+              <table>
+                <tbody>
+                  <tr>
+                    <td>
+                      <input
+                        type="text"
+                        placeholder="Course Name"
+                        value={this.state.courseName || " "} //Uncontrolled Component
+                        onChange={this.handleCourseNameChange.bind(this)}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        placeholder="Course Grade"
+                        value={this.state.grade || " "} //Uncontrolled Component
+                        onChange={this.handleGradeChange.bind(this)}
+                      />
+                    </td>
+                    {actionButton}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          );
+        }
+      }
+
+      class App extends React.Component {
+      
+        constructor(props) {
+          super(props);
+          this.state = {
+            grades: [
+              { id: 1, courseName: "Mathematics", grade: 91 },
+              { id: 2, courseName: "Physics", grade: 76 },
+              { id: 3, courseName: "Chemistry", grade: 64 },
+              { id: 4, courseName: "English", grade: 83 },
+              { id: 5, courseName: "Spanish", grade: 78 },
+            ],
+            currentlyEditing: null,
+            
+          };
+        }
+
+       
+        handleGradeChange(type, courseName, grade) {
+          console.log(type);
+          if (type == "add") {
+            let grades = this.state.grades;
+            grades.push({
+              id: Math.random() * 1000,
+              courseName: courseName,
+              grade: grade,
+            });
+            this.setState({ grades: grades });
+          } else if (type == "edit") {
+          }
+        }
+
+        handleGradeSelected(grade) {
+          this.setState({ currentlyEditing: grade });
+        }
+
+        handleUpdateState(grades) {
+          this.setState({ grades });
+        }
+
+        handleGradeAdd(courseName, grade) {
+          let grades = this.state.grades;
+          grades.push({ id: Math.random() * 100, courseName, grade: grade });
+          console.log(courseName, grade);
+          this.setState({ grades: grades });
+        }
+
+        componentDidMount() {}
+
+        componentWillUnmount() {}
+
+        render() {
+          return (
+            <div className="App">
+              <GradeAdd onChange={this.handleGradeAdd.bind(this)} />
+              <GradeList grades={this.state.grades} handleUpdateState={this.handleUpdateState.bind(this)}/>
+              <GradeResult grades={this.state.grades}  />
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </head>
+  <body>
+    <h1 class="h1">Grade Calculator</h1>
+    <div  class="div-root" id="root"></div>
+  </body>
+</html>
